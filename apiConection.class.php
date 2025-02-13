@@ -2,22 +2,18 @@
 
 class ApiConnection {
     private $baseUrl;
+    private $apiKey;
     private $headers;
 
-    public function __construct($baseUrl = null) {
-        // Si no se proporciona una URL base, construirla dinámicamente
-        if ($baseUrl === null) {
-            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-            $host = $_SERVER['HTTP_HOST'];
-            // Ajustamos la ruta para incluir /api/
-            $baseUrl = $protocol . $host . '/API-TO-DO/';
-        }
+    public function __construct() {
+        $config = require_once 'config.php';
         
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = rtrim($config['api']['base_url'], '/') . '/';
+        $this->apiKey = $config['api']['key'];
         $this->headers = array(
             'Content-Type: application/json',
             'Accept: application/json',
-            'Authorization: testapikey1234567890'  // Agregamos la API Key que configuramos
+            'Authorization: ' . $this->apiKey
         );
     }
 
@@ -74,7 +70,10 @@ class ApiConnection {
      * @return array Respuesta de la API
      */
     private function makeRequest($method, $endpoint, $data = null) {
+        $endpoint = ltrim($endpoint, '/');
         $url = $this->baseUrl . $endpoint;
+        
+        error_log("Haciendo petición a: " . $url);
         
         $curl = curl_init();
         

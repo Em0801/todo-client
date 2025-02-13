@@ -106,15 +106,22 @@ try {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Obtener la API key del servidor de forma segura
+        const API_KEY = <?php 
+            $config = require 'config.php';
+            echo json_encode($config['api']['key']);
+        ?>;
+
         $(document).ready(function() {
             // Crear nueva tarea
             $('#newTaskForm').on('submit', function(e) {
                 e.preventDefault();
                 $.ajax({
-                    url: '/API-TO-DO/tasks',
+                    url: 'http://localhost/API-TO-DO/tasks',
                     method: 'POST',
                     headers: {
-                        'Authorization': 'testapikey1234567890'
+                        'Authorization': API_KEY,
+                        'Content-Type': 'application/json'
                     },
                     data: JSON.stringify({
                         title: $('#title').val(),
@@ -138,10 +145,10 @@ try {
                 const newStatus = currentStatus === 'pending' ? 'completed' : 'pending';
 
                 $.ajax({
-                    url: `/API-TO-DO/tasks/${id}`,
+                    url: `http://localhost/API-TO-DO/tasks/${id}`,
                     method: 'PUT',
                     headers: {
-                        'Authorization': 'testapikey1234567890'
+                        'Authorization': API_KEY
                     },
                     data: JSON.stringify({ status: newStatus }),
                     contentType: 'application/json',
@@ -159,10 +166,10 @@ try {
                 if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
                     const id = $(this).data('id');
                     $.ajax({
-                        url: `/API-TO-DO/tasks/${id}`,
+                        url: `http://localhost/API-TO-DO/tasks/${id}`,
                         method: 'DELETE',
                         headers: {
-                            'Authorization': 'testapikey1234567890'
+                            'Authorization': API_KEY
                         },
                         success: function() {
                             location.reload();
